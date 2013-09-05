@@ -1,0 +1,126 @@
+{
+    "media": [
+        {
+            "defName": "TWENTYTWO",
+            "type": "png",
+            "file": "images/woman-sits-11.png"
+        },
+        {
+            "defName": "TWENTYONE",
+            "type": "png",
+            "file": "images/woman-sits-10.png"
+        },
+        {
+            "defName": "TWENTY",
+            "type": "png",
+            "file": "images/woman-sits-9.png"
+        },
+        {
+            "defName": "NINETEEN",
+            "type": "png",
+            "file": "images/woman-sits-8.png"
+        },
+        {
+            "defName": "EIGHTEEN",
+            "type": "png",
+            "file": "images/woman-sits-7.png"
+        },
+        {
+            "defName": "SEVENTEEN",
+            "type": "png",
+            "file": "images/woman-sits-6.png"
+        },
+        {
+            "defName": "SIXTEEN",
+            "type": "png",
+            "file": "images/woman-sits-5.png"
+        },
+        {
+            "defName": "FIFTEEN",
+            "type": "png",
+            "file": "images/woman-sits-4.png"
+        },
+        {
+            "defName": "FOURTEEN",
+            "type": "png",
+            "file": "images/woman-sits-3.png"
+        },
+        {
+            "defName": "THIRTEEN",
+            "type": "png",
+            "file": "images/woman-sits-2.png"
+        },
+        {
+            "defName": "TWELVE",
+            "type": "png",
+            "file": "images/woman-sits-1.png"
+        },
+        {
+            "defName": "ELEVEN",
+            "type": "png",
+            "file": "images/woman-sits-0.png"
+        },
+        {
+            "defName": "TEN",
+            "type": "png",
+            "file": "images/Muybridge-10.png"
+        },
+        {
+            "defName": "NINE",
+            "type": "png",
+            "file": "images/Muybridge-9.png"
+        },
+        {
+            "defName": "EIGHT",
+            "type": "png",
+            "file": "images/Muybridge-8.png"
+        },
+        {
+            "defName": "SEVEN",
+            "type": "png",
+            "file": "images/Muybridge-7.png"
+        },
+        {
+            "defName": "SIX",
+            "type": "png",
+            "file": "images/Muybridge-6.png"
+        },
+        {
+            "defName": "FIVE",
+            "type": "png",
+            "file": "images/Muybridge-5.png"
+        },
+        {
+            "defName": "FOUR",
+            "type": "png",
+            "file": "images/Muybridge-4.png"
+        },
+        {
+            "defName": "THREE",
+            "type": "png",
+            "file": "images/Muybridge-3.png"
+        },
+        {
+            "defName": "TWO",
+            "type": "png",
+            "file": "images/Muybridge-2.png"
+        },
+        {
+            "defName": "ONE",
+            "type": "png",
+            "file": "images/Muybridge-1.png"
+        },
+        {
+            "defName": "ZERO",
+            "type": "png",
+            "file": "images/Muybridge-0.png"
+        },
+        {
+            "defName": "MENU_ICON",
+            "type": "png",
+            "file": "images/image_icon_muybridge.png"
+        }
+    ],
+    "friendlyVersion": "VERSION",
+    "versionDefName": "APP_RESOURCES"
+}
