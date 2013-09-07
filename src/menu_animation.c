@@ -42,7 +42,8 @@
 	
 #include "SlideShow.h"			// Pull in global declares
 #include "menu_animation.h"		// pull in local module declares
-//#include "menu_buttons.h"
+#include "menu_images.h"
+#include "menu_direction.h"
 
 #include "animation.h"			// pull in needed declares 
 #include "Help.h"				// & function prototypes
@@ -61,7 +62,7 @@ static void handle_unload();
 // --------------------------------------------------------
 #define NUM_MENU_SECTIONS 		2
 #define NUM_MENU_FIRST_ITEMS	3
-#define NUM_MENU_SECOND_ITEMS	3
+#define NUM_MENU_SECOND_ITEMS	4
 //#define NUM_MENU_THIRD_ITEMS 1
 
 static struct AnimationMenuData {
@@ -79,61 +80,16 @@ static Window menu_window;	// program primary menu window
 //  public module defines and variable definitions
 // --------------------------------------------------------
 // --------------------------------------------------------
-//			menu_animation_show_page()
+//			menu_animation_show_window()
 //
 //    Display Animation module menu window
 // --------------------------------------------------------
-void menu_animation_show_page() {
+void menu_animation_show_window() {
 
 	window_stack_push(&menu_window, true);   // create menu window
 
-}  // menu_animation_show_page()
+}  // menu_animation_show_window()
 
-	
-// ------------------------------------------------------------------
-//        Menu Callbacks section
-//
-//  Contains menu selection callbacks
-// ------------------------------------------------------------------
-static void menu_fast_callback(){
-
-	animation_timer_run(FRAMERATE_FAST); // reset timer
-	window_stack_pop(true);		// pop widow & return
-
-}
-
-void menu_slow_callback(){
-
-	animation_timer_run(FRAMERATE_SLOW);
-	window_stack_pop(true);
-
-}
-
-void menu_step_callback() {
-
-	animation_timer_run(FRAMERATE_STEP);
-	window_stack_pop(true);
-	
-}
-
-void menu_settings_callback() {
-
-//	menu_settings();			// calling program settings menu
-	window_stack_pop(true);		// then return to calc function
-	
-}
-
-void menu_about_callback() {
-
-	help_show_page(ANIMATION_ABOUT); // Call context-sensitive Help page
-
-}
-
-void menu_help_callback() {
-
-	help_show_page(ANIMATION_HELP);	// Call context-sensitive Help page
-
-}
 
 // --------------------------------------------------------
 //			menu_window_cleanup()
@@ -182,6 +138,60 @@ void handle_unload(){
 
 }  // handle_unload()
 
+	
+// ------------------------------------------------------------------
+//        Menu Callbacks section
+//
+//  Contains menu selection callbacks
+// ------------------------------------------------------------------
+static void menu_fast_callback(){
+
+	animation_timer_run(FRAMERATE_FAST); // reset timer
+	window_stack_pop(true);		// pop widow & return
+
+}
+
+void menu_slow_callback(){
+
+	animation_timer_run(FRAMERATE_SLOW);
+	window_stack_pop(true);
+
+}
+
+void menu_step_callback() {
+
+	animation_timer_run(FRAMERATE_STEP);
+	window_stack_pop(true);
+	
+}
+
+void menu_images_callback() {
+
+	menu_images_show_window();	// Call Image Bank Action Bar
+//	window_stack_pop(true);		// then return to caling function
+	
+}
+
+void menu_direction_callback() {
+
+	menu_direction_show_window();	// call Direction Action Bar
+//	window_stack_pop(true);		// then return to calling function
+	
+}
+
+void menu_about_callback() {
+
+	help_show_window(ANIMATION_ABOUT); // Call context-sensitive Help page
+
+}
+
+void menu_help_callback() {
+
+	help_show_window(ANIMATION_HELP);	// Call context-sensitive Help page
+
+}
+
+
 // --------------------------------------------------------
 //			menu_animation_init()
 //
@@ -224,10 +234,15 @@ int menu_count = 0;
 	menu_count = 0;
 
 	menu_data.second_menu_items[menu_count++] = (SimpleMenuItem) {
-		.title = "Settings ->",
-		.callback = menu_settings_callback,
+		.title = "Images ->",
+		.callback = menu_images_callback,
 	};
 
+	menu_data.second_menu_items[menu_count++] = (SimpleMenuItem) {
+		.title = "Direction ->",
+		.callback = menu_direction_callback,
+	};
+	
 	menu_data.second_menu_items[menu_count++] = (SimpleMenuItem) {
 		.title = "Help ->",
 		.callback = menu_help_callback,

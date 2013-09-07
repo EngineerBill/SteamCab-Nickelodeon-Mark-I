@@ -1,9 +1,19 @@
 {
     "media": [
         {
-            "defName": "TWENTYTWO",
+            "defName": "TICK",
             "type": "png",
-            "file": "images/woman-sits-11.png"
+            "file": "images/Tempus Fugit TICK -White - 14 x 14.png"
+        },
+        {
+            "defName": "DOWN_ARROW",
+            "type": "png",
+            "file": "images/Tempus Fugit Arrow DOWN - White - 14 x 14.png"
+        },
+        {
+            "defName": "UP_ARROW",
+            "type": "png",
+            "file": "images/Tempus Fugit Arrow UP - White - 14 x 14.png"
         },
         {
             "defName": "TWENTYONE",

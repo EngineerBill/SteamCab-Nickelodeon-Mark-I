@@ -106,10 +106,13 @@ Implementatiion Notes:
 //			program header
 // ----------------------------------------------
 // Unique program ID (required by PebbleOS for synch/updates)
-#define MY_UUID {0xED, 0xA7, 14, 0xD0, 13, 0xE7, 11, 0xE3, 0x8F, 0xFD, 0x08, 00, 20, 0x0C, 0x9A, 66}
+//#define MY_UUID {0xED, 0xA7, 14, 0xD0, 13, 0xE7, 11, 0xE3, 0x8F, 0xFD, 0x08, 00, 20, 0x0C, 0x9A, 66}
+//#define MY_UUID {0xED, 0xA7, 14, 0xD0, 13, 0xE7, 11, 0xE3, 0x8F, 0xFD, 0x08, 00, 20, 0x0C, 0x9A, 61}
+#define MY_UUID {0xED, 0xA7, 14, 0xD0, 13, 0xE7, 11, 0xE3, 0x8F, 0xFD, 0x08, 00, 20, 0x0C, 0x9A, 62}
 
 PBL_APP_INFO(MY_UUID,
-             "SlideShow - Mk I",		// Program Name
+//             "SlideShow - Mk I",		// Program Name
+             "Nickleodeon",		// Program Name
              "SteamChest Chronicles",	// Author
              1, 0,						// Version
              RESOURCE_ID_MENU_ICON,		// this icon used in Pebble menu
@@ -132,7 +135,9 @@ PBL_APP_INFO(MY_UUID,
 //#include "feature_an:alog.h"		//
 
 //#include "menu_program.h"			// menu module declares & function prototypes
-#include "menu_animation.h"			// menu module declares & function prototypes
+#include "menu_animation.h"			//
+#include "menu_images.h"			//
+#include "menu_direction.h"			//
 //#include "menu_calc.h"			//
 //#include "menu_stop.h"			//
 //#include "menu_timer.h"			//
@@ -146,7 +151,7 @@ PBL_APP_INFO(MY_UUID,
 
 AppTimerHandle animation_timer;		// holds return value from system timer
 
-static int starting = 1;
+//static int starting = 1;
 
 
 // ----------------------------------------------------------------------------
@@ -215,9 +220,9 @@ static void handle_timer(AppContextRef ctx, AppTimerHandle handle, uint32_t cook
 
 static void handle_init(AppContextRef ctx) {
 (void)ctx;
-	
+
 // -------------------------------------------------
-//     set up state and global graphics
+// set up global app context
 // -------------------------------------------------
 	g_app_context = ctx;
 
@@ -228,6 +233,14 @@ static void handle_init(AppContextRef ctx) {
 // Note: we create first window in menu_program_init()
 // ---------------------------------------------------
 
+// init animation page (need to call animation module first
+// to set up variables, menu inits then call to get these values)
+	feature_animation_init();		
+	menu_animation_init();			// init main menu
+	menu_images_init();				// init bank select Action Bar
+	menu_direction_init();			// init bank select Action Bar
+	help_init();					// init Help page
+
 //   init program feature modules
 //	feature_calc_init();			// init Calculator feature
 //	feature_stop_init();			// init Stopwatch feature
@@ -235,8 +248,6 @@ static void handle_init(AppContextRef ctx) {
 //	feature_analog_init();			// init Analog Clock feature
 
 //   init various menu modules
-	menu_animation_init();			// init animation module menu menu
-//	menu_program_init();			// init program Home Page menu
 //	menu_calc_init();				// init program Main config menu
 //	menu_stop_init();				// (reserved for future use)
 //	menu_timer_init();				// (reserved for future use)
@@ -245,17 +256,14 @@ static void handle_init(AppContextRef ctx) {
 
 
 //   init program display pages modules
-	handle_animation_init();		// init animation page
 //	page_start_init();				// init start page
 //	page_about_init();				// init about page
-	help_init();					// init page
 //	page_timer_init();				//
 
 	
-// and now launch the program via the splash page
-
-// and start the animation timer
-	animation_show_page();
+// and now launch the main program Window
+// and then start the animation timer
+	animation_show_window();
 	animation_timer_start();
 
 }  // handle_init()
@@ -268,8 +276,13 @@ static void handle_init(AppContextRef ctx) {
 static void handle_deinit() {
 
 // clean up any allocated resources on exit
-	handle_animation_deinit();
-//	menu_program_deinit();
+	feature_animation_deinit();
+	menu_animation_deinit();		// init animation module menu menu
+	menu_images_deinit();			// init program Home Page menu
+	menu_direction_deinit();		// init program Home Page menu
+	help_deinit();					// init page
+
+///	menu_program_deinit();
 //	feature_calc_deinit();
 //	page_about_deinit();
 //	page_start_deinit();

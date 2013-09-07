@@ -8,44 +8,53 @@
 
 Theory of Operation:
 
-	The SlideShow:: program entry point pbl_main() sets up
-	a handle_timer() callback to process timer ticks and the
-	handle_init() function schedules an inital timer tick to
-	begin animation. The handle_init() routine in SlideShow.c
-	program initiation module calls this module's
-	page_animation_init()  function to create the appropriate
-	Window structure and set up the needed layers. 	
-
-	As timer ticks are received in <Program>:handle_timer(),
-	they are dispatched to this module's page_animation_tick()
-	function. This monitors the frame_rate flag to determine
-	how frequently the screen image should be updated and processes
-	as needed.
+	The Nickleodeon:: program entry point "pbl_main()" sets up
+	a handle_timer() callback to process timer ticks. PebbleOS then
+	calls the handle_init() function to allow your program to set
+	itself up. This function in turns calls "<module>_init()" to
+	set up each individual module. Here local BmpContainers are
+	initialized, Window Layers are defined and program variables
+	are loaded with their default values (specified in the 
+	"<program>_config.h" file.
 	
+	The handle_init() function then calls "animation_show_window()"
+	to push the opening Window onto the stack and then calls
+	"animation_timer_start()" to schedule the first timer tick.
+	
+	As timer ticks are received in <Program>:handle_timer(),
+	they are dispatched to this module's handle_animation_timer()
+	function. This updates the currently displayed image and then
+	calls "animation_timer_run()" to reset the timer (Note: if the
+	current frame_rate is STEP, then no timer is launched. You can
+	still change images with the UP/DOWN buttons or by pushing SELECT
+	and resetting frame_rate to FAST or SLOW>
+
 	Pressing the appropriate menu button can set the animation
 	rate and animation direction. This is used to change timer
 	duration, as needed.
 	
-	
 	Note that the needed animation images are loaded in the
-	page_animation:: handle_init() function (and *must* therefore
+	animation::feature_animation_init() function (and *must* therefore
 	be properly deinit'ed when the program exits or you will
 	introduce a memory leak that will lead to unstable operation!)
-	The BmpContainer array that holds these is declared global so
-	this module's page_animate_tick() routine can access when operating.
+
+	NOTE: A reasonable desire for naming consistency would suggest
+		  calling the init routines for this module "animation_init()"
+		  and "animation_deinit()" but as it turns out the Pebble API
+		  already has a routine called "animation_init()" so we had
+		  to improvise. Sorry about that...
 	
-	When in single step, hitting the UP and DOWN buttons will single
-	step through the images. Pressing SELECT will initially cycle
-	through	the framerates. Eventually it is planned to bring up a
-	menu which will allow the user to START/STOP operation, change
-	mode and see the About and Help pages.
+	When single stepping, hitting the UP and DOWN buttons will single
+	step through the images. Pressing SELECT will call up the program
+	menu when you have three options to allow you to cycle through
+	the framerates. Note that when animating, you can tune the framerate
+	with the UP/DOWN buttons. When single stepping, UP/DOWN change images
+	in either direction.
 
 
 Things you can do:
-				- Try adding your own set of images
-				- Try adding multiple sets and a menu item 
-				  to change between them
-				- Try adding a FORWARD/REVERS button
+				- Try adding your own set of images to or both banks
+				- Try adding a FORWARD/REVERSE button
 
 				- Most importantly - Have Fun!
 
@@ -84,24 +93,31 @@ typedef struct {
 
 static ImageData image_data;	// tracks animation data
 
-//static int tick_count;				// used to cycle between images
+//static int tick_count;		// used to cycle between images
 
-static int frame_rate;			// allowed values defined in animation.h file
+static int frame_rate;			// determines number of images per sec
+								// allowed values defined in animation.h file)
+static int direction;			// Direction to step through images (FORWARD or REVERSE)
 
-static Window animation_window;		// This module's window
+static int bank;				// Selects set of images to display (in prototype can be HORSE or GIRL)
 
-static int timer_count = 0;			// introduces a start delay
-//static int pause = 0;				// pause delay				
+
+static int image_count;			// introduces a start delay
+
+
+static Window animation_window;	// This module's window
+
+static TextLayer debug_layer;	// used to show debug messages (will later becom marquee text)
 static char debug_buffer[30];
 
 
-static TextLayer debug_layer;
 /*
-static TextLayer debug_layer;
 //static TextLayer tempus_layer;
 static TextLayer fugit_layer;
 static TextLayer version_layer;
 */
+
+
 // ----------------------------------------
 //    Locally defined Window callbacks
 // ----------------------------------------
@@ -114,15 +130,48 @@ static void click_config_provider();
 static void clicked_down();
 static void clicked_up();
 static void clicked_select();
-//static bool animation_running = 0;		// tracks animation state
+
+static void debug();
 
 // ----------------------------------------------------------------------------
 //               Public Window functions
 // ----------------------------------------------------------------------------
 // --------------------------------------------------------
-//			animation_timer_*()
+//			start_show_window()
+//       (called from main program)
+// --------------------------------------------------------
+void animation_show_window() {
+
+// activate app window
+	window_stack_push(&animation_window, true);
+
+}  //page_start_show_window()
+
+//void page_animation_start_animation() {
+//
+//	animation_timer = app_timer_send_event(g_app_context, FRAMERATE_DEFAULT, 42);
+//
+//}  // animation_show_window()
+
+// --------------------------------------------------------
+//			page_animation_timer()
+//		(called from TempusFugit tick handler)
+// --------------------------------------------------------
+void handle_animation_timer() {
+
+	update_image();				// first update Window
+	animation_timer_run(frame_rate);		// the set new timer (function will determine if needed)
+
+
+}  // handle_animation_timer()
+
+// --------------------------------------------------------
+//			animation_timer_run()
 //
 //       controls speed of animation timer
+//
+//  Cancel any previous timer, set framerate and if
+//  not STEP, then start a new timer.
 // --------------------------------------------------------
 void animation_timer_run(int new_rate) {
 	
@@ -150,123 +199,161 @@ void animation_timer_run(int new_rate) {
 
 }  // animation_timer_run()
 
-/*	
-void animation_timer_fast() {
-	
-	frame_rate = FRAMERATE_FAST;
-	animation_timer_run(frame_rate);
-	
-}  // animation_timer_stop()
-
-	
-void animation_timer_slow() {
-	
-	frame_rate = FRAMERATE_SLOW;
-
-}  // animation_timer_stop()
-
-
-void animation_timer_step() {
-	
-	frame_rate = FRAMERATE_STEP;
-
-}  // animation_timer_stop()
-*/
-void animation_timer_start() {
-
-	frame_rate = FRAMERATE_DEFAULT;
-	animation_timer = app_timer_send_event(g_app_context, frame_rate, 42);
-	
-}  // animationtimer_start()
 
 // --------------------------------------------------------
-//			start_show_window()
-//       (called from main program)
+//			animation_direction_set()
+//
+//       sets animation direction variable
+//
+//  Called from Direction Action Bar Menu.
 // --------------------------------------------------------
-void animation_show_page() {
+void animation_direction_set(int buttons) {
 
-// activate app window
-	window_stack_push(&animation_window, true);
+	direction = buttons;
 
-}  //page_start_show_page()
+}  // animation_direction_set()
 
-//void page_animation_start_animation() {
+
+int animation_direction_get() {
+
+	return direction;
+
+}  // animation_direction_get()
+
+// --------------------------------------------------------
+//		 	animation_bank_set()
 //
-//	animation_timer = app_timer_send_event(g_app_context, FRAMERATE_DEFAULT, 42);
+//         sets animation bank variable
+//   (this determines which set of images are shown)
 //
-//}  // animation_show_page()
+//      Called from Direction Action Bar Menu.
+// --------------------------------------------------------
+void animation_bank_set(int button) {
+
+	bank = button;
+
+}  // animation_direction_set()
+
+
+int animation_bank_get() {
+
+	return bank;
+
+}  // animation_bank_get()
+
 
 // ----------------------------------------------------------------------------
 //    helper functions
 //
-void debug(char *msg, int arg1, int arg2) {
+// ----------------------------------------------------------------------------
+static void debug(char *msg, int arg1, int arg2) {
 
-GFont norm24 = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);	
-
-	snprintf(debug_buffer, 20, "%s: arg1: %d arg2: %d",msg, arg1, arg2);
-	text_layer_set_text(&debug_layer, debug_buffer);
+//GFont norm24 = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);	
+	if(DEBUGGING) {
+		snprintf(debug_buffer, 20, "%s: arg1: %d arg2: %d",msg, arg1, arg2);
+		text_layer_set_text(&debug_layer, debug_buffer);
+	}
 
 }  // debug()
 
 // --------------------------------------------------------
-//			page_animation_timer()
-//		(called from TempusFugit tick handler)
+//			animation_timer_start()
+//
+//  called once from <main program>::handle_init()
+//  to set up default framerate and start initial timer
+//  (Note: you *can't* cancel a timer that hasn't been
+//  defined yet, so need to call this once to get things
+//  going. Then you can callanimation_timer_run() after
+//  each image change - it will then handle stepping, if
+//  needed...
 // --------------------------------------------------------
-void handle_animation_timer() {
+void animation_timer_start() {
 
-	if(timer_count == -1) {  // process end of loop
-//  remove element 9
-		layer_remove_from_parent(&image_data.image_container[image_data.current_image].layer.layer);
-		bmp_deinit_container(&image_data.image_container[image_data.current_image]);
-// now add in element 0
-		image_data.current_image = 0;		
-		bmp_init_container(IMAGE_RESOURCE_IDS[image_data.current_image], &image_data.image_container[image_data.current_image]);
-		layer_set_frame(&image_data.image_container[image_data.current_image].layer.layer, GRect(0,0,144,130));
-		layer_add_child(&animation_window.layer, &image_data.image_container[image_data.current_image].layer.layer);
-		timer_count = 0;
-		animation_timer_run(frame_rate);
-	debug("flop:", image_data.current_image, 0);
-		return;
+	frame_rate = FRAMERATE_DEFAULT;
+	if(frame_rate != FRAMERATE_STEP) {
+		animation_timer = app_timer_send_event(g_app_context, frame_rate, 42);
 	}
 
-	if(timer_count < (NUMBER_OF_IMAGES-1)) {  // start another time interval
-		timer_count++;
+}  // animationtimer_start()
+
+
+// ----------------------------------------------------------------------------
+//			   update_image()
+//
+//   Main routine to change currently displayed image.
+// ----------------------------------------------------------------------------
+
+void update_image() {
+
 //  we be animating...
+
+// case: loop around the top
+	if((direction == UP) && (image_data.current_image == (NUMBER_OF_IMAGES-1))) {
+//  remove last element
+		layer_remove_from_parent(&image_data.image_container[image_data.current_image].layer.layer);
+		bmp_deinit_container(&image_data.image_container[image_data.current_image]);
+// now add in bottom element
+		bmp_init_container(IMAGE_RESOURCE_IDS[bank][0], &image_data.image_container[0]);
+		layer_set_frame(&image_data.image_container[0].layer.layer, GRect(0,0,144,130));
+		layer_add_child(&animation_window.layer, &image_data.image_container[0].layer.layer);
+		image_data.current_image = 0;			// reset current_image
+		animation_timer_run(frame_rate);		// and reset timer (if needed)
+	debug("loop up:", image_data.current_image, 0);
+	}
+
+
+// case: loop around the bottom
+	else if((direction == DOWN) && (image_data.current_image == 0)) {
+//  remove first element
+		layer_remove_from_parent(&image_data.image_container[image_data.current_image].layer.layer);
+		bmp_deinit_container(&image_data.image_container[image_data.current_image]);
+// now add in top element
+	int temp = (NUMBER_OF_IMAGES - 1);
+		bmp_init_container(IMAGE_RESOURCE_IDS[bank][temp], &image_data.image_container[temp]);
+		layer_set_frame(&image_data.image_container[temp].layer.layer, GRect(0,0,144,130));
+		layer_add_child(&animation_window.layer, &image_data.image_container[temp].layer.layer);
+		image_data.current_image = temp;		// reset current_image
+		animation_timer_run(frame_rate);		// and reset timer (if needed)
+	debug("loop down:", image_data.current_image, 0);
+	}
+
+// case: increment the image
+	else if(direction == UP) {  
 		layer_remove_from_parent(&image_data.image_container[image_data.current_image].layer.layer);
 		bmp_deinit_container(&image_data.image_container[image_data.current_image]);
 
 		image_data.current_image++; // get next image
-		
-		bmp_init_container(IMAGE_RESOURCE_IDS[image_data.current_image], &image_data.image_container[image_data.current_image]);
+		bmp_init_container(IMAGE_RESOURCE_IDS[bank][image_data.current_image], &image_data.image_container[image_data.current_image]);
 		layer_set_frame(&image_data.image_container[image_data.current_image].layer.layer, GRect(0,0,144,130));
 		layer_add_child(&animation_window.layer, &image_data.image_container[image_data.current_image].layer.layer);
+	debug("incrementing:", image_data.current_image, 0);
 
-//		snprintf(debug_buffer, 20, "tm: %d img: %d", timer_count, image_data.current_image);
-//		text_layer_set_text(&debug_layer, debug_buffer);
+	}
 
-		if(image_data.current_image == (NUMBER_OF_IMAGES-1)) {
-			timer_count = -1;
-//			pause = 0;
-		}
-	}	
+// case: increment the image
+	else  { // => direction == DOWN
+		layer_remove_from_parent(&image_data.image_container[image_data.current_image].layer.layer);
+		bmp_deinit_container(&image_data.image_container[image_data.current_image]);
 
+		image_data.current_image--; // get next image
+		bmp_init_container(IMAGE_RESOURCE_IDS[bank][image_data.current_image], &image_data.image_container[image_data.current_image]);
+		layer_set_frame(&image_data.image_container[image_data.current_image].layer.layer, GRect(0,0,144,130));
+		layer_add_child(&animation_window.layer, &image_data.image_container[image_data.current_image].layer.layer);
+	debug("decrementing:", image_data.current_image, 0);
+
+	}
+
+// Now reset timer and go...
 	animation_timer_run(frame_rate);
-	debug("flip:", image_data.current_image, 0);
-
-	//	text_layer_init(&debug_layer, GRect (17, 108, 110, 28));
+//	debug("flip:", image_data.current_image, 0);
 
 	
-}  // handle_animation_timer()
+}  // update_image()
 
 
-// ----------------------------------------------------------------------------
-//    private module functions
-// ----------------------------------------------------------------------------
-
-
-// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------
 //               Window Handlers
-// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------
 
 // --------------------------------------------------------
 //      handle_load()
@@ -297,22 +384,24 @@ static void handle_disappear(Window *window) {
 
 }  // handle_disappear()
 
-// --------------------------------------------------------------------------
-//          click provider section
-// --------------------------------------------------------------------------
 
+// ----------------------------------------------------------------
+//               Button Handlers
+// ----------------------------------------------------------------
 // --------------------------------------------------------
 //			clicked_up()
 // --------------------------------------------------------
 static void clicked_up(ClickRecognizerRef recognizer, void *context) {
+int temp;
 
-
-
-	if(frame_rate == FRAMERATE_STEP) {  // then step image
-		frame_rate = FRAMERATE_SLOW;
-		handle_animation_timer();
+	if(frame_rate == FRAMERATE_STEP) {  // step image and done
+		temp = animation_direction_get();
+		animation_direction_set(REVERSE);
+		update_image();
+		animation_direction_set(temp);
 		return;
 	}
+// else adjust framerate and reset timer
 	
 	frame_rate = frame_rate - 50;
 	
@@ -331,8 +420,7 @@ static void clicked_up(ClickRecognizerRef recognizer, void *context) {
 static void clicked_select(ClickRecognizerRef recognizer, void *context) {
 
 	debug("SELECT", frame_rate, 0);
-	
-		menu_animation_show_page();
+	menu_animation_show_window();
 
 }  // clicked_select()
 
@@ -341,21 +429,25 @@ static void clicked_select(ClickRecognizerRef recognizer, void *context) {
 //			clicked_down()
 // --------------------------------------------------------
 static void clicked_down(ClickRecognizerRef recognizer, void *context) {
+int temp;
 
-
-
-	if(frame_rate == FRAMERATE_STEP) {  // the step image
-		handle_animation_timer();		// need to pass "reverse" flag
+	if(frame_rate == FRAMERATE_STEP) {  // step image and done
+		temp = animation_direction_get();
+		animation_direction_set(FORWARD);
+		update_image();
+		animation_direction_set(temp);
 		return;
 	}
 	
+// else adjust framerate and reset timer
 	frame_rate = frame_rate + 50;
 	
 	if(frame_rate > FRAMERATE_SLOW){
-		frame_rate = FRAMERATE_STEP;
+		frame_rate = FRAMERATE_SLOW;
 		handle_animation_timer();		// need to pass "reverse" flag
 	}
 	debug("DOWN", frame_rate, 0);
+
 }  // clicked_down()
 
 // --------------------------------------------------------
@@ -373,24 +465,28 @@ static void click_config_provider(ClickConfig **config, void* context) {
 //
 //         Build window layers here
 // --------------------------------------------------------
-void handle_animation_init(){
+void feature_animation_init(){
 
 //	GFont norm28 = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
 	GFont norm24 = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
 //	GFont norm18 = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-// ---------------------------------------
-// Initialize module variables
-// ---------------------------------------
-	frame_rate = FRAMERATE_DEFAULT;		// start with static image
 
-	resource_init_current_app(&APP_RESOURCES);
+// ---------------------------------------
+// Initialize module defaults
+// ---------------------------------------
+	frame_rate = FRAMERATE_DEFAULT;				// set in animation_config.h
+	direction  = DIRECTION_DEFAULT;				// set in animation_config.h
+	bank       = BANK_DEFAULT;					// set in animation_config.h
+	image_data.current_image = IMAGE_DEFAULT;	// set in animation_config.h
+
+	resource_init_current_app(&APP_RESOURCES); // set up access to resources
 
 // Initialize Image Container
 //	for(int i=0; i<NUMBER_OF_IMAGES; i++) {
-//        bmp_init_container(IMAGE_RESOURCE_IDS[i], &image_data.image_container[i]);
+//        bmp_init_container(IMAGE_RESOURCE_IDS[bank][i], &image_data.image_container[i]);
 //	}
 // initialize first bitmap container
-	bmp_init_container(IMAGE_RESOURCE_IDS[0], &image_data.image_container[0]);
+	bmp_init_container(IMAGE_RESOURCE_IDS[bank][0], &image_data.image_container[0]);
 
 // ---------------------------------------
 // Set up local Window handlers
@@ -409,11 +505,9 @@ void handle_animation_init(){
 	window_set_click_config_provider(&animation_window, (ClickConfigProvider) click_config_provider);
 	
 
-// Init child_a layer at (0,0) and size (40, 46):
+//  Initialize Image layer
 //	layer_init(&image_data.image_container[0].layer.layer, GRect(0, 0, 144, 91));
 //	layer_init(&image_data.image_container[0].layer.layer, GRect(5, 20, 130, 0));
-
-	image_data.current_image = 0;		// initialize logo tracking GRect(0,0,144,130)
 	layer_set_frame(&image_data.image_container[0].layer.layer, GRect(0,0,144,130));
 	layer_add_child(&animation_window.layer, &image_data.image_container[0].layer.layer);
 
@@ -421,7 +515,7 @@ void handle_animation_init(){
 //	text_layer_init(&debug_layer, GRect (17, 108, 110, 28));
 	text_layer_init(&debug_layer, GRect (0, 125, 144, 28));
 //	text_layer_set_text(&debug_layer, "- Muybridge -");
-	snprintf(debug_buffer, 20, "tm: %d img: %d", timer_count, image_data.current_image);
+	snprintf(debug_buffer, 20, "tm: %d img: %d", image_count, image_data.current_image);
 	text_layer_set_text(&debug_layer, debug_buffer);
 	text_layer_set_background_color(&debug_layer, GColorBlack);
 	text_layer_set_text_color(&debug_layer, GColorWhite);
@@ -446,13 +540,13 @@ void handle_animation_init(){
 */
 
 	
-}  // handle_animation_init()
+}  // animation_init()
 
 
 // --------------------------------------------------------
-//			page_start_deinit()
+//			feature_start_deinit()
 // --------------------------------------------------------
-void handle_animation_deinit() {
+void feature_animation_deinit() {
 
 // clean up image containers
 //	for(int i = 0; i< NUMBER_OF_IMAGES; i++){

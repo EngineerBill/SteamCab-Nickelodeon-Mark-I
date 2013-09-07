@@ -17,7 +17,8 @@ Use:	Include this header file in any module that needs to access
 #define TF_PAGE_HELP_H
 
 extern void help_init();		// call this to init module
-extern void help_show_page();	// call this to display Help Window
+extern void help_deinit();		// call this to init module
+extern void help_show_window();	// call this to display Help Window
 								// See  Help.c opening comments
 								// block for calling details
 								// or SlideShow.c for defines for

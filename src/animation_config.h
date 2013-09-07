@@ -24,10 +24,20 @@ Use:	Include this header file in corresponding module's implementatio
 \* -------------------------------------------------------------------------------------- */
 #ifndef TF_PAGE_HELP_H
 #define TF_PAGE_HELP_H
-	
 
 	
-#define NUMBER_OF_IMAGES	22		// Count of bitmaps included
+#define FRAMERATE_DEFAULT	FRAMERATE_STEP	// Starting framerate (expressed in milliseconds per frame)
+#define DIRECTION_DEFAULT	FORWARD	// animation stepping direction (FORWARD or REVERSE)
+#define BANK_DEFAULT		HORSE	// starting image bank(HORSE or GIRL)
+#define IMAGE_DEFAULT		  0		// starting image (First in bank for now)
+
+#define HORSE				 0		// Bitmap Bank #1 ID
+#define WOMAN				 1		// Bitmap Bank #2 ID
+#define NUMBER_OF_BANKS		 2		// Number of Banks of Images
+#define NUMBER_OF_IMAGES	11		// Count of bitmaps PER BANK!
+
+#define DEBUGGING			true	// controls debugging print routine
+
 
 // -----------------------------------
 //    Array of animation image IDs
@@ -41,17 +51,14 @@ Use:	Include this header file in corresponding module's implementatio
 // no longer load as it will become too large to store into
 // flash memory. If this happens you can try making each
 // individual bitmap smaller.
-int IMAGE_RESOURCE_IDS[NUMBER_OF_IMAGES] = {
-	RESOURCE_ID_ZERO, 
-	RESOURCE_ID_ONE, RESOURCE_ID_TWO, RESOURCE_ID_THREE,
-	RESOURCE_ID_FOUR, RESOURCE_ID_FIVE, RESOURCE_ID_SIX,
-	RESOURCE_ID_SEVEN, RESOURCE_ID_EIGHT, RESOURCE_ID_NINE,
-	RESOURCE_ID_TEN, RESOURCE_ID_ELEVEN, RESOURCE_ID_TWELVE,
-	RESOURCE_ID_THIRTEEN, RESOURCE_ID_FOURTEEN, RESOURCE_ID_FIFTEEN,
-	RESOURCE_ID_SIXTEEN, RESOURCE_ID_SEVENTEEN, RESOURCE_ID_EIGHTEEN,
-	RESOURCE_ID_NINETEEN, RESOURCE_ID_TWENTY, RESOURCE_ID_TWENTYONE,
-};
-
-
+int IMAGE_RESOURCE_IDS[NUMBER_OF_BANKS][NUMBER_OF_IMAGES] =
+{ {RESOURCE_ID_ZERO, RESOURCE_ID_ONE, RESOURCE_ID_TWO,
+	  RESOURCE_ID_THREE, RESOURCE_ID_FOUR, RESOURCE_ID_FIVE,
+	  RESOURCE_ID_SIX, RESOURCE_ID_SEVEN, RESOURCE_ID_EIGHT,
+	 RESOURCE_ID_NINE, RESOURCE_ID_TEN },
+	{ RESOURCE_ID_ELEVEN, RESOURCE_ID_TWELVE, RESOURCE_ID_THIRTEEN,
+	 RESOURCE_ID_FOURTEEN, RESOURCE_ID_FIFTEEN, RESOURCE_ID_SIXTEEN,
+	 RESOURCE_ID_SEVENTEEN, RESOURCE_ID_EIGHTEEN, RESOURCE_ID_NINETEEN,
+	 RESOURCE_ID_TWENTY, RESOURCE_ID_TWENTYONE } };
 
 #endif

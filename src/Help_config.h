@@ -36,9 +36,9 @@ Use:	Include this header file in any module that needs to access
 
 //  Short form test here for debugging
 
-char animation_about_scroll_text[] = "SteamCab SlideShow:\n";
+char animation_about_scroll_text[] = "SteamCab SlideShow: About text goes here\n";
 
-char animation_help_scroll_text[] = "SlideShow:";
+char animation_help_scroll_text[] = "SlideShow: Help text goes here";
 
 //char calc_help_scroll_text[] = "START/STOP";
 

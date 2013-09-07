@@ -18,11 +18,11 @@
 // ----------------------------------------------
 // 		Public functions for this module
 // ----------------------------------------------
-extern void menu_animation_init();		// call to init module	
-extern void menu_animation_deinit();	// call to clean up module
+extern void menu_animation_init();			// call to init module	
+extern void menu_animation_deinit();		// call to clean up module
 
-extern void menu_animation_show_page();	// call this to display Timer Menu
-extern void menu_animation_cleanup();	// Call this to remove parent from
-										// Window stack and return to function
-										// Module
+extern void menu_animation_show_window();	// call this to display Timer Menu
+extern void menu_animation_cleanup();		// Call this to remove parent from
+											// Window stack and return to function
+											// Module
 #endif

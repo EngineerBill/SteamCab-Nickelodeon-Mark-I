@@ -35,8 +35,8 @@
 
 AppContextRef g_app_context;	// stores global App context
 
-AppTimerHandle animation_timer;	// holds return value from system timer
+//AppTimerHandle animation_timer;	// holds return value from system timer
 
-bool g_debugging = false;		// if enable. print messages in header
+//bool g_debugging = true;		// if enable. print messages in header
 
 #endif

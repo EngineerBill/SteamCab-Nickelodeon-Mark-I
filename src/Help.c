@@ -7,7 +7,7 @@
 	Called from :
 					- Animation module
 
-	To invoke, call the public function help_show_page(CONTEXT)
+	To invoke, call the public function help_show_window(CONTEXT)
 	 the values for CONTEXT are defined in Help.h and may
 	 include:
 				- ANIMATION_HELP
@@ -59,7 +59,7 @@ static void handle_load();
 static void handle_unload();
 
 // --------------------------------------------------------
-//			help_show_page()
+//			help_show_window()
 //
 //   public function to show context sensitive Help Page
 //   (Called with flag indicting which Help page to show.
@@ -68,7 +68,7 @@ static void handle_unload();
 //          another case statement here to extend)
 //
 // --------------------------------------------------------
-void help_show_page(int page){
+void help_show_window(int page){
 
 
 	scroll_layer_set_content_offset(&scroll_layer, GPointZero, false);
@@ -86,7 +86,7 @@ void help_show_page(int page){
 	
 	window_stack_push(&help_window, true);
 
-}  // page_help_show_page()
+}  // help_show_window()
 
 
 // --------------------------------------------------------------------
@@ -157,7 +157,7 @@ static void click_config_provider(ClickConfig **config, void* context) {
 }
 
 // --------------------------------------------------------
-//		page_help_init()
+//		help_init()
 //
 //  Called by TempusFugit.c when program is first init'ed
 // --------------------------------------------------------
@@ -228,5 +228,8 @@ ScrollLayerCallbacks overrideClbs = {
 
 	layer_add_child(&help_window.layer, &scroll_layer.layer);
 
-}  // page_help_init()
+}  // help_init()
 
+void help_deinit() {
+
+}  // help_deinit()

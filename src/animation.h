@@ -18,31 +18,40 @@
 //	module variable defines
 // --------------------------------------------------------
 // Animation parameter defines
-#define FRAMERATE_DEFAULT	500		// (expressed in milliseconds per frame)
+//#define FRAMERATE_DEFAULT	500		// (expressed in milliseconds per frame)
 #define FRAMERATE_MAX		 10		// 2fps
 #define FRAMERATE_FAST		 10		// 20fps
 #define FRAMERATE_SLOW		500		// 2fps
-#define FRAMERATE_START		 -1		// Handle first tick
+//#define FRAMERATE_START		 -1		// Handle first tick
 #define FRAMERATE_STEP		  0		// =>  0 frames/sec
 									// => 20 frames/sec
-#define PAUSE_DELAY			  1		// =>  0 frames/sec
+#define UP			  		  0		// 
+#define DOWN			  	  1		// 
 
-extern int IMAGE_RESOURCE_IDS[];
+#define FORWARD		  		  0		// 
+#define REVERSE			  	  1		// 
+
+extern int IMAGE_RESOURCE_IDS[2][11];	// note: these dimensions defined in animation_conf.h file
 	
 // --------------------------------------------------------
 //	module public functions
 // --------------------------------------------------------
-extern void handle_animation_init();   // call to set up module
-extern void handle_animation_deinit(); // call to close module
+extern void feature_animation_init();  	// call to set up module
+extern void feature_animation_deinit();	// call to close module
 
-extern void animation_show_page();		// call to display this Window
-extern void handle_animation_timer(); 	// call to init module
+extern void animation_show_window();	// call to display this Window
+extern void handle_animation_timer();	// call to init module
 extern void animation_timer_run(); 	 	// call to init module
 extern void animation_timer_start(); 	// call to init module
+extern int  animation_direction_get();
+extern void animation_direction_set();
+extern int  animation_bank_get();
+extern void animation_bank_set();
+extern void update_image();
 
-extern void animation_fast();			// call to service timer tick
-extern void animation_slow();			// call to service timer tick
-extern void animation_step();			// call to service timer tick
+//extern void animation_fast();			// call to service timer tick
+//extern void animation_slow();			// call to service timer tick
+//extern void animation_step();			// call to service timer tick
 
 
 #endif
