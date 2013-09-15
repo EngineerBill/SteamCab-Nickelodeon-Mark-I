@@ -2,7 +2,7 @@
 
                       page_about.c
 
-	Implements Tempus Fugit Main Program About window
+	Implements Tempus Fugit Main Program About Window
 
 	Called from :
 					- Main Program menu
@@ -19,31 +19,21 @@ TODO:
 #include "pebble_os.h"
 #include "pebble_app.h"
 #include "pebble_fonts.h"
-	
-//#include "resource_ids.auto.h"	// provides hook to program resources
 
-//#include "TempusFugit.h"			// pull in global declares
 #include "page_about.h"			// pull in local declares
 
 // Local Window Layers structure
 static struct TempusFugitAboutData {
-//	BmpContainer logo_container;	// logo image container
-
 	TextLayer title_layer;			// About window text layers
 	TextLayer copyright_layer;		//
 	TextLayer publisher_layer;		//
 	TextLayer contact_layer;		//
 } about_data;
 
-// Logo Container
 static BmpContainer logo_container;	// logo image container
-
-
 
 static Window about_window;			// Module Window 
 
-//static void handle_about_appear();	// forward references
-//static void handle_about_disappear();
 
 // --------------------------------------------------------
 //			page_about_show_page()
@@ -52,12 +42,12 @@ static Window about_window;			// Module Window
 // --------------------------------------------------------
 void page_about_show_window(){
 // ---------------------------------------
-//    activate show window
+//    activate this module's Window
 // ---------------------------------------
 
 	window_stack_push(&about_window, true);
 
-}  // page_about_show_page()
+}  // page_about_show_window()
 
 
 // --------------------------------------------------------------------------
@@ -112,19 +102,11 @@ static void click_config_provider(ClickConfig **config, void* context) {
 void page_about_init() {
 	window_init(&about_window, "About...");
 
-//	window_set_window_handlers(&about_window, (WindowHandlers) {
-//        .appear = (WindowHandler)handle_about_appear,
-//        .disappear = (WindowHandler)handle_about_disappear,  // we'll remove window when we're done
-//		.load = handle_about_load,
-//		.unload = handle_about_unload,
-//    });
-
 //  --------------------------------------
 // Set up window click handlers
 //  --------------------------------------
 	window_set_click_config_provider(&about_window, (ClickConfigProvider) click_config_provider);
 
-	
 //	window_set_fullscreen(&about_window, true);		// remove top bar and replace with debug layer 
 	window_set_background_color(&about_window, GColorBlack);
 
@@ -134,7 +116,6 @@ void page_about_init() {
 //	GFont norm28 = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
 //	GFont norm24 = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
 	GFont norm14 = fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD);
-
 
 // set up logo
 	bmp_init_container(RESOURCE_ID_LOGO, &logo_container);
@@ -178,13 +159,12 @@ void page_about_init() {
 	text_layer_set_font(&about_data.contact_layer, norm14);
 	layer_add_child(&about_window.layer, &about_data.contact_layer.layer);
 
-
 }  // page_about_init()
 
 // --------------------------------------------------------
 //		page_about_deinit()
 //
-//   remove window when we're done with it.
+//   remove window resources when we're done with them.
 // --------------------------------------------------------
 void page_about_deinit() {
 
@@ -192,28 +172,3 @@ void page_about_deinit() {
 
 }  // page_about_deinit()
 
-// --------------------------------------------------------
-//		handle_about_disappear()
-//
-//   remove window when we're done with it.
-// --------------------------------------------------------
-/*void handle_about_appear() {
-
-// need to set "active window" here
-//	tf_active_window = ABOUT_WINDOW;
-
-	
-}  // handle_about_disappear()
-
-// --------------------------------------------------------
-//		handle_about_disappear()
-//
-//   remove window when we're done with it.
-// --------------------------------------------------------
-void handle_about_disappear() {
-
-//	tf_active_window = NO_WINDOW;		// assumes windows are removed before new ones added...
-
-	
-}  // handle_about_disappear()
-*/

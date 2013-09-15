@@ -25,7 +25,6 @@
 		Clock (Left)	- Lefthanded Analog Watchface
 		Clock (Right)	- Righthanded Analog Watchface
 
-		Help		- Context-sensitive Help page
 		About		- Copyright splash page	
 
  -------------------------------------------------------------------------------- 
@@ -34,19 +33,16 @@
    Implementation Plan
 	1) (done) Create feature menu
 	2) (done) Implement each menu command (see above)
-	3) (done) Implement Help module
-		- Requires modifying Help.c to take argument	
-	4) Add Analog Watchfaces
-	5) Populate Feature Help Text
+	3) (done) Add Analog Watchfaces
 
 \* -------------------------------------------------------------------------------------- */
 #include "pebble_os.h"
 #include "pebble_app.h"
 #include "pebble_fonts.h"
 
-#include "resource_ids.auto.h"		// system-generated hook to program resources
+#include "resource_ids.auto.h"	// system-generated hook to program resources
 	
-#include "SlideShow.h"			// Pull in global declares
+#include "Nickelodeon.h"		// Pull in global declares
 #include "menu_animation.h"		// pull in local module declares
 
 #include "menu_images.h"		// Add Images Action Bar Menu
@@ -55,7 +51,6 @@
 #include "feature_analog.h"		// Add analog watchface module
 	
 #include "animation.h"			// pull in needed declares 
-#include "Help.h"				// & function prototypes
 #include "page_about.h"			// & function prototypes
 
 // --------------------------------------------------------
@@ -73,7 +68,7 @@
 #define NUM_MENU_SECTIONS 		3
 #define NUM_MENU_FIRST_ITEMS	3
 #define NUM_MENU_SECOND_ITEMS	2
-#define NUM_MENU_THIRD_ITEMS 	4
+#define NUM_MENU_THIRD_ITEMS 	3
 
 static struct AnimationMenuData {
 	SimpleMenuLayer menu_layer;
@@ -174,12 +169,6 @@ void menu_about_callback() {
 
 }
 
-void menu_help_callback() {
-
-	help_show_window(ANIMATION_HELP);	// Call context-sensitive Help page
-
-}
-
 
 // --------------------------------------------------------
 //			menu_animation_init()
@@ -246,10 +235,6 @@ int menu_count = 0;
 		.title = "Clock (Right)",
 		.callback = menu_clock_right_callback,
 	};
-		menu_data.third_menu_items[menu_count++] = (SimpleMenuItem) {
-		.title = "Help ->",
-		.callback = menu_help_callback,
-	};
 
 	menu_data.third_menu_items[menu_count++] = (SimpleMenuItem) {
 		.title = "About ->",
@@ -265,12 +250,10 @@ int menu_count = 0;
 		.items = menu_data.first_menu_items,
 	};
 	menu_data.menu_sections[1] = (SimpleMenuSection) {
-		.title = "(More...)",
 		.num_items = NUM_MENU_SECOND_ITEMS,
 		.items = menu_data.second_menu_items,
 	};
 	menu_data.menu_sections[2] = (SimpleMenuSection) {
-		.title = "(More...)",
 		.num_items = NUM_MENU_THIRD_ITEMS,
 		.items = menu_data.third_menu_items,
 	};

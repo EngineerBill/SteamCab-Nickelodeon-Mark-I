@@ -19,9 +19,9 @@
 
 #include "menu_images.h"
 
-#include "SlideShow.h"			// global declares
+#include "Nickelodeon.h"		// global declares
 #include "animation.h"			// global declares
-#include "menu_animation.h"			// global declares
+#include "menu_animation.h"		// global declares
 
 static int pending_buttons;		// used to track user choice
 

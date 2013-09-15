@@ -24,12 +24,13 @@
 // 		Public functions for this module
 // ----------------------------------------------
 
-extern void feature_analog_show_window();	// called from menu_program
+extern void feature_analog_show_window();	// called from main program menu
 										// to display Window
-extern void feature_analog_init();		// called from TempusFugit.c
 extern void feature_analog_tick();		// handle_init() routine
 extern void feature_analog_config();	// to set up direction & hands
-extern void feature_analog_deinit();		// called from TempusFugit.c
+
+extern void feature_analog_init();		// called from TempusFugit.c
+extern void feature_analog_deinit();	// called from TempusFugit.c
 
 
 #endif

@@ -72,10 +72,10 @@ Things you can do:
 #include "pebble_fonts.h"
 	
 
-#include "SlideShow.h"			// provides global program defines
+#include "Nickelodeon.h"		// provides global program defines
 #include "animation.h"			// provides local module defines	
 #include "animation_config.h"	// Holds compiled defaults. See file for details
-#include "menu_animation.h"	// program defines for other modules
+#include "menu_animation.h"		// program defines for other modules
 
 #include "resource_ids.auto.h"	// system-generated hook to program resources
 
@@ -93,7 +93,7 @@ typedef struct {
 
 static ImageData image_data;	// tracks animation data
 
-//static int tick_count;		// used to cycle between images
+static AppTimerHandle animation_timer;	// used to cycle between images
 
 static int frame_rate;			// determines number of images per sec
 								// allowed values defined in animation.h file)
@@ -110,12 +110,6 @@ static Window animation_window;	// This module's window
 static TextLayer debug_layer;	// used to show debug messages (will later becom marquee text)
 static char debug_buffer[30];
 
-
-/*
-//static TextLayer tempus_layer;
-static TextLayer fugit_layer;
-static TextLayer version_layer;
-*/
 
 
 // ----------------------------------------
@@ -142,20 +136,14 @@ void animation_show_window() {
 
 }  //page_start_show_window()
 
-//void page_animation_start_animation() {
-//
-//	animation_timer = app_timer_send_event(g_app_context, FRAMERATE_DEFAULT, 42);
-//
-//}  // animation_show_window()
-
 // --------------------------------------------------------
-//			page_animation_timer()
+//			feature_animation_timer()
 //		(called from TempusFugit tick handler)
 // --------------------------------------------------------
 void feature_animation_timer() {
 
-	update_image();				// first update Window
-	animation_timer_run(frame_rate);		// the set new timer (function will determine if needed)
+	update_image();						// first update Window
+	animation_timer_run(frame_rate);	// the set new timer (function will determine if needed)
 
 
 }  // feature_animation_timer()
@@ -282,6 +270,21 @@ void animation_timer_start() {
 
 void update_image() {
 
+// Update caption
+	if(CAPTIONING && (bank == 0)) {  // Only for Horse bank for now...
+		if(image_data.current_image == 0) {
+			text_layer_set_text(&debug_layer, "- The British -");
+		}
+		else if(image_data.current_image == 3) {
+			text_layer_set_text(&debug_layer, "-            -");
+		}
+		else if(image_data.current_image == 4) {
+			text_layer_set_text(&debug_layer, "- ARE COMING! -");
+		}
+	}
+	else {
+		text_layer_set_text(&debug_layer, "-             -");
+	}
 //  we be animating...
 
 // case: loop around the top
@@ -295,7 +298,7 @@ void update_image() {
 		layer_add_child(&animation_window.layer, &image_data.image_container[0].layer.layer);
 		image_data.current_image = 0;			// reset current_image
 		animation_timer_run(frame_rate);		// and reset timer (if needed)
-	debug("loop up:", image_data.current_image, 0);
+		debug("loop up:", image_data.current_image, 0);
 	}
 
 
@@ -311,7 +314,7 @@ void update_image() {
 		layer_add_child(&animation_window.layer, &image_data.image_container[temp].layer.layer);
 		image_data.current_image = temp;		// reset current_image
 		animation_timer_run(frame_rate);		// and reset timer (if needed)
-	debug("loop down:", image_data.current_image, 0);
+		debug("loop down:", image_data.current_image, 0);
 	}
 
 // case: increment the image
@@ -323,8 +326,7 @@ void update_image() {
 		bmp_init_container(IMAGE_RESOURCE_IDS[bank][image_data.current_image], &image_data.image_container[image_data.current_image]);
 		layer_set_frame(&image_data.image_container[image_data.current_image].layer.layer, GRect(0,0,144,130));
 		layer_add_child(&animation_window.layer, &image_data.image_container[image_data.current_image].layer.layer);
-	debug("incrementing:", image_data.current_image, 0);
-
+		debug("incrementing:", image_data.current_image, 0);
 	}
 
 // case: increment the image
@@ -336,7 +338,7 @@ void update_image() {
 		bmp_init_container(IMAGE_RESOURCE_IDS[bank][image_data.current_image], &image_data.image_container[image_data.current_image]);
 		layer_set_frame(&image_data.image_container[image_data.current_image].layer.layer, GRect(0,0,144,130));
 		layer_add_child(&animation_window.layer, &image_data.image_container[image_data.current_image].layer.layer);
-	debug("decrementing:", image_data.current_image, 0);
+		debug("decrementing:", image_data.current_image, 0);  // only prints if debugging flag defined
 
 	}
 
@@ -424,7 +426,7 @@ static void click_config_provider(ClickConfig **config, void* context) {
 }
 
 // --------------------------------------------------------
-//			page_start_init()
+//			feature_animation_init()
 //
 //         Build window layers here
 // --------------------------------------------------------
@@ -444,10 +446,7 @@ void feature_animation_init(){
 
 	resource_init_current_app(&APP_RESOURCES); // set up access to resources
 
-// Initialize Image Container
-//	for(int i=0; i<NUMBER_OF_IMAGES; i++) {
-//        bmp_init_container(IMAGE_RESOURCE_IDS[bank][i], &image_data.image_container[i]);
-//	}
+
 // initialize first bitmap container
 	bmp_init_container(IMAGE_RESOURCE_IDS[bank][0], &image_data.image_container[0]);
 
@@ -471,44 +470,23 @@ void feature_animation_init(){
 // set up Text layers
 //	text_layer_init(&debug_layer, GRect (17, 108, 110, 28));
 	text_layer_init(&debug_layer, GRect (0, 125, 144, 28));
-//	text_layer_set_text(&debug_layer, "- Muybridge -");
-	snprintf(debug_buffer, 20, "tm: %d img: %d", image_count, image_data.current_image);
-	text_layer_set_text(&debug_layer, debug_buffer);
+//	snprintf(debug_buffer, 20, "tm: %d img: %d", image_count, image_data.current_image);
+//	text_layer_set_text(&debug_layer, debug_buffer);
 	text_layer_set_background_color(&debug_layer, GColorBlack);
 	text_layer_set_text_color(&debug_layer, GColorWhite);
 	text_layer_set_text_alignment(&debug_layer, GTextAlignmentCenter);
 	text_layer_set_font(&debug_layer, norm24);
 	layer_add_child(&animation_window.layer, &debug_layer.layer);	
 
-/*
-
-	text_layer_init(&fugit_layer, GRect (86, 108, 75, 28));
-	text_layer_set_text(&fugit_layer, "Fugit");
-	text_layer_set_background_color(&fugit_layer, GColorBlack);
-	text_layer_set_text_color(&fugit_layer, GColorWhite);
-	text_layer_set_font(&fugit_layer, norm24);
-
-	text_layer_init(&version_layer, GRect (28, 137, 90, 20));
-	text_layer_set_text_alignment(&version_layer, GTextAlignmentCenter);
-	text_layer_set_text(&version_layer, "- beta 0.1");
-	text_layer_set_background_color(&version_layer, GColorBlack);
-	text_layer_set_text_color(&version_layer, GColorWhite);
-	text_layer_set_font(&version_layer, norm18);
-*/
-
 	
 }  // animation_init()
 
 
 // --------------------------------------------------------
-//			feature_start_deinit()
+//			feature_animation_deinit()
 // --------------------------------------------------------
 void feature_animation_deinit() {
 
-// clean up image containers
-//	for(int i = 0; i< NUMBER_OF_IMAGES; i++){
-//		bmp_deinit_container(&image_data.image_container[i]);
-//	}
 	bmp_deinit_container(&image_data.image_container[image_data.current_image]);
 	
 }  // feature_animation_deinit()

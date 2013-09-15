@@ -19,7 +19,7 @@ Use:	Include this header file in corresponding module's implementatio
 	Author:			Peter Deutsch (engineerbill@stemchest.com)
 	Date Created:	8/18/13
 	Modified:		8/27/13 - released with Tempus Fugit
-	Modified:		9/3/13  - integrated into SteamCab SlideShow
+	Modified:		9/3/13  - integrated into SteamCab Nickelodeon
 
 \* -------------------------------------------------------------------------------------- */
 #ifndef TF_PAGE_HELP_H
@@ -34,8 +34,10 @@ Use:	Include this header file in corresponding module's implementatio
 #define WOMAN				 1		// Bitmap Bank #2 ID
 #define NUMBER_OF_BANKS		 2		// Number of Banks of Images
 #define NUMBER_OF_IMAGES	11		// Count of bitmaps PER BANK!
+#define CAPTIONING			true	// setting to false will disable image captioning
 
-#define DEBUGGING			true	// controls debugging print routine
+//#define DEBUGGING			true	// if true module prints debugging info
+#define DEBUGGING			false	// if true module prints debugging info
 
 
 // -----------------------------------

@@ -3,12 +3,12 @@
                   	SteamCab Nickelodeon - Mark I
 					      (version 1.0)
 
-				    Simple Bitmap Viewer...
+				    Animated Bitmap Viewer...
 
  Allows user to load up to two sets of bitmaps and either single step
  through them, or run them as an animation series at any rate between
  two and 20 frames per second. The user can toggle between single step
- and animation mode, as well as between image sets. To demosntrate the
+ and animation mode, as well as between image sets. To demonstrate the
  Pebble's ability to multitask (and to reduce the number of program
  slots required) the author has also included a copy of both the
  Lefthanded and Righthanded SteamCab Analog Watchfaces.
@@ -209,11 +209,9 @@ Implementation Notes:
 
 
 \* -------------------------------------------------------------------------------------- */
-
 #include "pebble_os.h"
 #include "pebble_app.h"
 #include "pebble_fonts.h"
-	
 
 // ----------------------------------------------
 //			program header
@@ -230,27 +228,23 @@ PBL_APP_INFO(MY_UUID,
 			 							// so e.g. we can get button events
 );
 
-
 // --------------------------------------------------------
 // Bring in global defines
 // --------------------------------------------------------
-#include "Nickelodeon.h"				// public program declares & functions
-#include "Nickelodeon_globals.h"		// define global variables & functions
+#include "Nickelodeon.h"			// public program declares & functions
+#include "Nickelodeon_globals.h"	// define global variables & functions
 
 #include "animation.h"				// feature declares & function prototypes 
 #include "feature_analog.h"			//
 
-#include "menu_animation.h"			// menu modules
+#include "menu_animation.h"			// support menu modules
 #include "menu_images.h"			//
 #include "menu_direction.h"			//
 
-#include "page_about.h"				// 
-
-AppTimerHandle animation_timer;		// holds return value from system timer
-
+#include "page_about.h"				// copyright/support page
 
 // ----------------------------------------------------------------------------
-//     
+//        Main Program Callbacks (Timers, init/deinit)
 // ----------------------------------------------------------------------------
 // -------------------------------------------------------
 //				handle_timer()
@@ -266,6 +260,7 @@ static void handle_timer(AppContextRef ctx, AppTimerHandle handle, uint32_t cook
 		feature_animation_timer();
 
 }  // handle_timer()
+
 // ----------------------------------------------------------------------------
 //				handle_tick()
 //
@@ -302,7 +297,7 @@ static void handle_init(AppContextRef ctx) {
 // ---------------------------------------------------
 
 // init animation window (need to call animation module first
-// to set up variables, the individual menu inits then call
+// to set up variables, then individual menu inits that call
 // back to that module to get these values as needed)
 
 //   init program feature modules
@@ -313,13 +308,12 @@ static void handle_init(AppContextRef ctx) {
 	menu_animation_init();			// init main menu
 	menu_images_init();				// init bank select Action Bar
 	menu_direction_init();			// init bank select Action Bar
-// 	help_init();					// init Help page
 
-//   init program display pages modules
+//   init program copyright/support page
 	page_about_init();				// init about page
 	
 // and now launch the main program Window
-// and then start the animation timer
+// and possibly start the animation timer
 	animation_show_window();
 	animation_timer_start();
 
@@ -339,14 +333,11 @@ static void handle_deinit() {
 	menu_animation_deinit();		// init animation module menu menu
 	menu_images_deinit();			// init program Home Page menu
 	menu_direction_deinit();		// init program Home Page menu
-//	help_deinit();					// init page
 
 	page_about_deinit();
 
 
-	
 }  // handle_program_deinit()
-
 
 
 // ----------------------------------------------------------------------------

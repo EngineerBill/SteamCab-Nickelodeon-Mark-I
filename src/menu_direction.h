@@ -22,7 +22,7 @@
 
 
 extern void menu_direction_show_window();
-//extern void menu_direction_select();
+
 extern void menu_direction_init();
 extern void menu_direction_deinit();
 

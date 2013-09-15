@@ -21,7 +21,7 @@
 
 
 extern void menu_images_show_window();
-//extern void menu_images_select();
+
 extern void menu_images_init();
 extern void menu_images_deinit();
 

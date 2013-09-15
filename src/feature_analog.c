@@ -25,7 +25,10 @@ Also demonstrates adding a TextLayer to an existing watchface app.
 							- converted from Watchface App to standard App
 							- Added flag to allow selection of watch direction
 							- Added flag to select/ommit second hand
-							
+
+		Mark IV		- Integrated into Nickelodeon.
+
+
 About:
 ------
 
