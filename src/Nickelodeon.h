@@ -1,17 +1,16 @@
 /* ------------------------------------------------------------------ *\
 
-                      SlideShow.h
+                      Nickelodeon.h
 
-	Program declares for SteamCab SlideShow Pebble app.
+	Program declares for SteamCab Nickelodeon Pebble app.
  
 	Author:			Peter Deutsch (engineerbill@stemchest.com)
 	Date Created:	9/1/13
-	Modified:		9/1/13 - finished Tempus Fugit
-	Modified:		9/3/13 - adapated for SteamCab SlideShow	
+	Modified:		9/3/13 - adapated for SteamCab Nickelodeon	
 							 (added *_config.h file)
 \* ------------------------------------------------------------------ */	
-#ifndef MUYBRIDGE_H
-#define MUYBRIDGE_H
+#ifndef NICKELODEON_H
+#define NICKELODEON_H
 
 #include "pebble_os.h"
 #include "pebble_app.h"

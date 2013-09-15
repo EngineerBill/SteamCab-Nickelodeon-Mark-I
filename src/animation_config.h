@@ -25,7 +25,6 @@ Use:	Include this header file in corresponding module's implementatio
 #ifndef TF_PAGE_HELP_H
 #define TF_PAGE_HELP_H
 
-	
 #define FRAMERATE_DEFAULT	FRAMERATE_STEP	// Starting framerate (expressed in milliseconds per frame)
 #define DIRECTION_DEFAULT	FORWARD	// animation stepping direction (FORWARD or REVERSE)
 #define BANK_DEFAULT		HORSE	// starting image bank(HORSE or GIRL)

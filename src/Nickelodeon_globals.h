@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------------------------------- *\
 
-                      SlideShow_globals.h
+                      Nickelodeon_globals.h
 					  
 		   Global header file for SteamCab SlideShow program
 	
@@ -13,7 +13,7 @@
 
 	Author:				Peter Deutsch (engineerbill@stemchest.com)
 	Date Created:		9/1/13
-	Last Modified:		9/3/13 - adapated for SteamCab SlideShow
+	Modified:			9/3/13 - adapated for SteamCab Nickelodeon
 
 
 \* -------------------------------------------------------------------------------------- */

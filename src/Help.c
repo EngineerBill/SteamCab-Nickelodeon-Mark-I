@@ -37,7 +37,7 @@ History:
 #include "pebble_app.h"
 #include "pebble_fonts.h"
 	
-#include "SlideShow.h"		// global declares
+#include "Nickelodeon.h"	// global declares
 #include "Help.h"			// local declares
 #include "Help_config.h"
 

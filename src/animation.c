@@ -22,7 +22,7 @@ Theory of Operation:
 	"animation_timer_start()" to schedule the first timer tick.
 	
 	As timer ticks are received in <Program>:handle_timer(),
-	they are dispatched to this module's handle_animation_timer()
+	they are dispatched to this module's feature_animation_timer()
 	function. This updates the currently displayed image and then
 	calls "animation_timer_run()" to reset the timer (Note: if the
 	current frame_rate is STEP, then no timer is launched. You can
@@ -121,11 +121,6 @@ static TextLayer version_layer;
 // ----------------------------------------
 //    Locally defined Window callbacks
 // ----------------------------------------
-static void handle_appear();
-static void handle_disappear();
-static void handle_load();
-static void handle_unload();
-
 static void click_config_provider();
 static void clicked_down();
 static void clicked_up();
@@ -157,13 +152,13 @@ void animation_show_window() {
 //			page_animation_timer()
 //		(called from TempusFugit tick handler)
 // --------------------------------------------------------
-void handle_animation_timer() {
+void feature_animation_timer() {
 
 	update_image();				// first update Window
 	animation_timer_run(frame_rate);		// the set new timer (function will determine if needed)
 
 
-}  // handle_animation_timer()
+}  // feature_animation_timer()
 
 // --------------------------------------------------------
 //			animation_timer_run()
@@ -261,9 +256,11 @@ static void debug(char *msg, int arg1, int arg2) {
 //
 //  called once from <main program>::handle_init()
 //  to set up default framerate and start initial timer
-//  (Note: you *can't* cancel a timer that hasn't been
+//  (if needed).
+//
+//  Note: you *can't* cancel a timer that hasn't been
 //  defined yet, so need to call this once to get things
-//  going. Then you can callanimation_timer_run() after
+//  going. Then you can call animation_timer_run() after
 //  each image change - it will then handle stepping, if
 //  needed...
 // --------------------------------------------------------
@@ -352,40 +349,6 @@ void update_image() {
 
 
 // ----------------------------------------------------------------
-//               Window Handlers
-// ----------------------------------------------------------------
-
-// --------------------------------------------------------
-//      handle_load()
-// --------------------------------------------------------
-
-static void handle_load(Window *window) {
-
-}  // handle_load
-
-// --------------------------------------------------------
-//      handle_unload()
-// --------------------------------------------------------
-static void handle_unload(Window *window) {
-
-}  // handle_unload()
-
-// --------------------------------------------------------
-//      handle_appear()
-// --------------------------------------------------------
-static void handle_appear(Window *window) {
-
-}  // handle_appear()
-
-// --------------------------------------------------------
-//      handle_disappear()
-// --------------------------------------------------------
-static void handle_disappear(Window *window) {
-
-}  // handle_disappear()
-
-
-// ----------------------------------------------------------------
 //               Button Handlers
 // ----------------------------------------------------------------
 // --------------------------------------------------------
@@ -444,7 +407,7 @@ int temp;
 	
 	if(frame_rate > FRAMERATE_SLOW){
 		frame_rate = FRAMERATE_SLOW;
-		handle_animation_timer();		// need to pass "reverse" flag
+		feature_animation_timer();		// need to pass "reverse" flag
 	}
 	debug("DOWN", frame_rate, 0);
 
@@ -491,13 +454,7 @@ void feature_animation_init(){
 // ---------------------------------------
 // Set up local Window handlers
 // ---------------------------------------
-	window_init(&animation_window, "Muybridge Animate");
-    window_set_window_handlers(&animation_window, (WindowHandlers) {
-        .appear = (WindowHandler)handle_appear,
-        .disappear = (WindowHandler)handle_disappear,
-		.load = handle_load,
-		.unload = handle_unload,
-    });
+	window_init(&animation_window, "Nickelodeon");
 
 	window_set_fullscreen(&animation_window, true);	// remove top bar and replace with debug layer 
 	window_set_background_color(&animation_window, GColorBlack);
@@ -554,4 +511,4 @@ void feature_animation_deinit() {
 //	}
 	bmp_deinit_container(&image_data.image_container[image_data.current_image]);
 	
-}  // handle_animation_deinit()
+}  // feature_animation_deinit()

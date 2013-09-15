@@ -31,7 +31,7 @@ static ActionBarLayer action_bar;	// Needed Window layers
 static TextLayer button_text_layer;	// 
 
 static char *bank0_ptr = "Horse";	// Display strings
-static char *bank1_ptr = "Girl";	//
+static char *bank1_ptr = "Woman";	//
 
 // If the following string appears it means
 // that the pending_buttons variable has been

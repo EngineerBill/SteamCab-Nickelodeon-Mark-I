@@ -1,6 +1,11 @@
 {
     "media": [
         {
+            "defName": "LOGO",
+            "type": "png",
+            "file": "images/Nickelodeon - 40 x 40 - 9-14-13.png"
+        },
+        {
             "defName": "TICK",
             "type": "png",
             "file": "images/Tempus Fugit TICK -White - 14 x 14.png"
