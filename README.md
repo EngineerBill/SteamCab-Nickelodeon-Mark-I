@@ -1,7 +1,6 @@
          	SteamCab Nickelodeon - Mark I
-					      (version 1.0)
+		    (version 1.0)
 
-				    Animated Bitmap Viewer...
 
 An Animated Bitmap Viewer for your Pebble Watch!
 
